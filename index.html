@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/public/style.css">
+    <title>Exam Schedule</title>
+</head>
+
+<body>
+    <div id="notificationBox" style="position:fixed; top:20px; right:20px; background:#007bff; color:white; padding:10px 20px; border-radius:5px; display:none; z-index:1000;"></div>
+    <div class="wrapper">
+        <nav>
+            <ul class="navbar">
+                <li class="logo">
+                    <img src="./Photos/logo-ju.png" alt="JU_logo">
+                </li>
+                <li class="text">IIT-JU(Exam Schedule)</li>
+            </ul>
+        </nav>
+        <div class="add-exam">
+            <h3>Add New Exam</h3>
+            <form id="examForm">
+                <input type="text" name="course_name" placeholder="Course Name" required>
+                <input type="number" name="exam_no" placeholder="Exam Number" required>
+                <!-- <input type="number" name="batch" placeholder="Batch (47-54)" min="47" max="54" required>-->
+                <label for="batch"></label>
+                <select name="batch" id="batch" required>
+                    <option value="" disabled selected hidden>Batch</option>
+                    <option value="47">47</option>
+                    <option value="48">48</option>
+                    <option value="49">49</option>
+                    <option value="50">50</option>
+                    <option value="51">51</option>
+                    <option value="52">52</option>
+                    <option value="53">53</option>
+                    <option value="54">54</option>
+                </select>
+                <input type="date" name="exam_date" required>
+                <input type="time" name="start_time" required>
+                <input type="number" name="duration_minutes" placeholder="Duration (minutes)" required>
+                <button type="submit">Add Exam</button>
+            </form>
+        </div>
+        
+        <div class="exam-filters">
+        <button id="ongoingBtn" class="filter-btn active">Ongoing Exams</button>
+        <button id="upcomingBtn" class="filter-btn">Upcoming Exams</button>
+        </div>
+    
+    
+        <div id="examContainer"></div>
+        <audio id="notificationSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+    </div>
+    
+    <footer>
+        <p>&copy; 2024 Jahangirnagar University, Savar, Dhaka. All Rights Reserved.</p>
+    </footer>
+
+    <script src="public/app.js"></script>
+</body>
+
+</html>
