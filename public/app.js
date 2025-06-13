@@ -284,23 +284,23 @@ const ExamController = {
                     clearInterval(countdownInterval);
                     countdownIntervals.delete(timeLeftId);
                     if (el) {
-                    el.textContent = "0s";
-                    el.style.color = "#dc3545"; // Final red color
-                }
+                        el.textContent = "0s";
+                        el.style.color = "#dc3545"; // Final red color
+                    }
                     ExamController.loadExams();
                     return;
                 }
 
                 if (el) {
-                el.textContent = formatRemainingTime(remainingMs);
+                    el.textContent = formatRemainingTime(remainingMs);
 
-                // 🔴 Change color to red if under 5 minutes
-                if (remainingMs < 5 * 60 * 1000) {
-                    el.style.color = "#dc3545"; // Bootstrap red
-                } else {
-                    el.style.color = "#007bff"; // Bootstrap blue (default)
+                    // 🔴 Change color to red if under 5 minutes
+                    if (remainingMs < 5 * 60 * 1000) {
+                        el.style.color = "#dc3545"; // Bootstrap red
+                    } else {
+                        el.style.color = "#007bff"; // Bootstrap blue (default)
+                    }
                 }
-            }
                 remainingMs -= 1000;
             }, 1000);
 
@@ -347,6 +347,8 @@ const ExamController = {
             <button class="cancel-btn">Cancel</button>
             ${currentView === 'upcoming' ? '<button class="reschedule-btn">Reschedule</button>' : ''}
             <button class="duration-btn">Change Duration</button>
+            <button id="zoomIn" style="background-color: lightgreen;">Zoom In</button>
+            <button id="zoomOut" style="background-color: lightcoral;">Zoom Out</button>
             <button id="backToList" style="background-color: gray;">Back to List</button>
         </div>
     `;
@@ -359,6 +361,28 @@ const ExamController = {
             clearInterval(countdownIntervals.get(timeLeftId2));
             countdownIntervals.delete(timeLeftId2);
         }
+
+        // Zoom functionality
+        let fontSize = 5;  // Default font size
+        const countdownElement = document.getElementById(timeLeftId2);
+        let cardScale = 1;  // Initial scale of the card
+        document.getElementById('zoomIn').addEventListener('click', () => {
+            if(cardScale<=1.5)
+            cardScale += 0.1;
+            else fontSize+= 1;
+            countdownElement.style.fontSize = `${fontSize}em`;
+            card.style.transform = `scale(${cardScale})`;  // Scale the entire card
+        });
+
+        document.getElementById('zoomOut').addEventListener('click', () => {
+            if (cardScale > 1) {
+                if(fontSize>5) fontSize-= 1;
+                else
+                cardScale -= 0.1;
+                countdownElement.style.fontSize = `${fontSize}em`;
+                card.style.transform = `scale(${cardScale})`;  // Scale the entire card
+            }
+        });
 
         const countdownInterval = setInterval(() => {
             const el = document.getElementById(timeLeftId2);
@@ -452,14 +476,14 @@ const ExamController = {
         const exam = await this._getSelectedExamFromExpandedView();
         if (!exam) return;
 
-        
-            try {
-                await ExamService.cancelExam(exam.course_name, exam.exam_no, exam.batch);
-                alert('Exam cancelled successfully!');
-                this.loadExams();
-            } catch (error) {
-                alert(`Failed to cancel exam: ${error.message}`);
-            }
+
+        try {
+            await ExamService.cancelExam(exam.course_name, exam.exam_no, exam.batch);
+            alert('Exam cancelled successfully!');
+            this.loadExams();
+        } catch (error) {
+            alert(`Failed to cancel exam: ${error.message}`);
+        }
     },
 
 
