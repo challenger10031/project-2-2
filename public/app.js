@@ -426,7 +426,11 @@ const ExamController = {
 
 
         // Add event listeners for actions
-        card.querySelector('.cancel-btn')?.addEventListener('click', this.handleCancelExam.bind(this));
+        card.querySelector('.cancel-btn')?.addEventListener('click',  () => {
+            this.handleCancelExam(this);
+            clearInterval(countdownInterval);
+             this.stopPropagation();
+        });
         card.querySelector('.reschedule-btn')?.addEventListener('click', this.showRescheduleForm.bind(this));
         card.querySelector('.duration-btn')?.addEventListener('click', this.showDurationForm.bind(this));
         document.getElementById('backToList').addEventListener('click', () => {
@@ -473,9 +477,9 @@ const ExamController = {
      * Handles exam cancellation
      * @param {Event} e - Click event
      */
-    handleCancelExam: async function (e) {
+    handleCancelExam: async function () {
 
-        e.stopPropagation();
+        //e.stopPropagation();
         
         const exam = await this._getSelectedExamFromExpandedView();
         if (!exam) return;
