@@ -340,6 +340,8 @@ const ExamController = {
         <p><strong>Start Time:</strong> ${exam.start_time}</p>
         <p><strong>Duration:</strong> ${exam.duration_minutes} minutes</p>
         <p><strong>End Time:</strong> ${exam.finish_time}</p>
+        <p><strong>Invigilator Name:</strong> ${exam.invigilator_name || 'Not Assigned'}</p>
+        <p><strong>Invigilator Email:</strong> ${exam.invigilator_email || 'Not Provided'}</p>
         <h1 id="${timeLeftId2}" style="font-size: 5em; color: #007bff; margin: 20px 0;">
             ${formatRemainingTime(targetTime - now)}
         </h1>
@@ -383,7 +385,7 @@ const ExamController = {
                 card.style.transform = `scale(${cardScale})`;  // Scale the entire card
             }
         });
-
+        const state =(currentView == 'upcoming');
         const countdownInterval = setInterval(() => {
             const el = document.getElementById(timeLeftId2);
             if (remainingMs <= 0) {
@@ -395,7 +397,7 @@ const ExamController = {
 
                 // Detect if it's start or end of exam
 
-                if (Math.abs(remainingMs) < 5000 && currentView == 'upcoming') {
+                if (Math.abs(remainingMs) < 5000 && state) {
                     showNotification(`🟢 ${exam.course_name} exam has started.`);
                 } else if (Math.abs(remainingMs) < 5000) {
                     showNotification(`🔴 ${exam.course_name} exam has ended.`);
@@ -472,7 +474,9 @@ const ExamController = {
      * @param {Event} e - Click event
      */
     handleCancelExam: async function (e) {
+
         e.stopPropagation();
+        
         const exam = await this._getSelectedExamFromExpandedView();
         if (!exam) return;
 

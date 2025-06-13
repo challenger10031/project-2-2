@@ -9,7 +9,9 @@
 </head>
 
 <body>
-    <div id="notificationBox" style="position:fixed; top:20px; right:20px; background:#007bff; color:white; padding:10px 20px; border-radius:5px; display:none; z-index:1000;"></div>
+    <div id="notificationBox"
+        style="position:fixed; top:20px; right:20px; background:#007bff; color:white; padding:10px 20px; border-radius:5px; display:none; z-index:1000;">
+    </div>
     <div class="wrapper">
         <nav>
             <ul class="navbar">
@@ -40,20 +42,25 @@
                 <input type="date" name="exam_date" required>
                 <input type="time" name="start_time" required>
                 <input type="number" name="duration_minutes" placeholder="Duration (minutes)" required>
+                <!-- New invigilator fields -->
+                <input type="text" id="invigilator_name" name="invigilator_name" placeholder="Invigilator Name">
+
+                <input type="email" id="invigilator_email" name="invigilator_email"  placeholder="Invigilator Email">
                 <button type="submit">Add Exam</button>
             </form>
         </div>
-        
+
         <div class="exam-filters">
-        <button id="ongoingBtn" class="filter-btn active">Ongoing Exams</button>
-        <button id="upcomingBtn" class="filter-btn">Upcoming Exams</button>
+            <button id="ongoingBtn" class="filter-btn active">Ongoing Exams</button>
+            <button id="upcomingBtn" class="filter-btn">Upcoming Exams</button>
         </div>
-    
-    
+
+
         <div id="examContainer"></div>
-        <audio id="notificationSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+        <audio id="notificationSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+            preload="auto"></audio>
     </div>
-    
+
     <footer>
         <p>&copy; 2024 Jahangirnagar University, Savar, Dhaka. All Rights Reserved.</p>
     </footer>

@@ -89,18 +89,34 @@ app.get('/', (req, res) => {
 
 // Add new exam
 app.post('/api/exams', async (req, res) => {
-  const { course_name, exam_no, exam_date, start_time, duration_minutes, batch } = req.body;
+  const { course_name, exam_no, exam_date, start_time, duration_minutes, batch, invigilator_name, invigilator_email } = req.body;
   
   // Validate batch range
   if (batch < 47 || batch > 54) {
     return res.status(400).json({ error: 'Batch must be between 47-54' });
   }
-
+  if (invigilator_email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(invigilator_email)) {
+    return res.status(400).json({ error: 'Invalid email format for invigilator' });
+  }
   try {
-    const [result] = await pool.query(
-      'INSERT INTO exams (course_name, exam_no, exam_date, start_time, duration_minutes, batch) VALUES (?, ?, ?, ?, ?, ?)',
-      [course_name, exam_no, exam_date, start_time, duration_minutes, batch]
-    );
+    const query = `
+      INSERT INTO exams (course_name, exam_no, exam_date, start_time, duration_minutes, batch, invigilator_name, invigilator_email) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [
+      course_name, 
+      exam_no, 
+      exam_date, 
+      start_time, 
+      duration_minutes, 
+      batch, 
+      invigilator_name || null, // If invigilator_name is not provided, insert null
+      invigilator_email || null  // If invigilator_email is not provided, insert null
+    ];
+
+    // Execute the query
+    const [result] = await pool.query(query, values);
     res.status(201).json({ success: true });
   } catch (err) {
     console.error(err);
