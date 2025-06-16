@@ -384,6 +384,7 @@ const ExamController = {
             // Sync the timer between the full-screen div and the popup window
             const syncTimer = setInterval(function () {
                 bigTimer.textContent = countdownElement.textContent;
+                bigTimer.style.color=document.getElementById(timeLeftId2).style.color;
             }, 1000); // Update every second to keep them in sync
 
             // Optional: Close the zoom window when the popup window is closed
