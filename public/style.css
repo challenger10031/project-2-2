@@ -144,6 +144,7 @@ flex: 1;
 padding: 20px;
 font-size: 1.2em;
 background-color: #f0f0f0;
+color:#333;
 border: none;
 cursor: pointer;
 transition: background-color 0.3s;
@@ -151,6 +152,7 @@ transition: background-color 0.3s;
 
 .filter-btn:hover {
 background-color: #dcdcdc;
+color:#333;
 }
 
 .filter-btn.active {
@@ -240,4 +242,99 @@ footer{
     justify-content: space-evenly;
     align-items: center;
     box-shadow: 5px 20px 10px rgba(0, 0, 0, 0.1);
+}
+/* General body and page content styling */
+
+
+/* Content sections above and below the button */
+.content {
+    padding: 20px;
+    background-color: #f5f5f5;
+    margin: 10px 0;
+}
+
+/* Styling for the full-screen div (overlay) */
+.full-screen-div {
+    position: fixed; /* Fixes the div to the screen */
+    top: 50%; /* Center it vertically */
+    left: 50%; /* Center it horizontally */
+    transform: translate(-50%, -50%); /* Perfect centering */
+    width: 70vw; /* Fixed width */
+    height: 70vh; /* Fixed height */
+    background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
+    z-index: 9999; /* Ensures it stays on top */
+    display: flex; /* Center the content inside */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    border-radius: 20px; /* Rounded corners */
+    border: 5px solid #fff; /* White border for the overlay */
+    flex-direction: column;
+}
+
+/* Styling for the content inside the full-screen div */
+.full-screen-content {
+    background-color: white;
+    padding: 40px;
+    width: 100%; /* Take the full width of the parent div */
+    height: 100%; /* Take the full height of the parent div */
+    box-sizing: border-box; /* Prevent padding from affecting the layout */
+    overflow: auto;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    position: relative;
+    text-align: center;
+}
+
+/* Countdown timer styling */
+.timer {
+    font-size: 72px; /* Large font size for the countdown */
+    margin-bottom: 20px;
+}
+
+/* Button styles */
+button {
+    font-size: 18px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Close button inside the full-screen div */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: black;
+}
+/* Timer inside zoomed window */
+#bigTimer {
+    font-size: calc(10vw + 10vh); /* Make the timer responsive */
+    text-align: center;
+    color: white;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7); /* Optional: Add a shadow for better visibility */
+}
+
+/* Flex container to center the timer */
+.zoom-window-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin: 0;
 }

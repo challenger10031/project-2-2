@@ -350,7 +350,6 @@ const ExamController = {
             ${currentView === 'upcoming' ? '<button class="reschedule-btn">Reschedule</button>' : ''}
             <button class="duration-btn">Change Duration</button>
             <button id="zoomIn" style="background-color: lightgreen;">Zoom In</button>
-            <button id="zoomOut" style="background-color: lightcoral;">Zoom Out</button>
             <button id="backToList" style="background-color: gray;">Back to List</button>
         </div>
     `;
@@ -369,23 +368,30 @@ const ExamController = {
         const countdownElement = document.getElementById(timeLeftId2);
         let cardScale = 1;  // Initial scale of the card
         document.getElementById('zoomIn').addEventListener('click', () => {
-            if(cardScale<=1.5)
-            cardScale += 0.1;
-            else fontSize+= 1;
-            countdownElement.style.fontSize = `${fontSize}em`;
-            card.style.transform = `scale(${cardScale})`;  // Scale the entire card
-        });
+            // Open a new popup window in full-screen mode
+            const zoomWindow = window.open("", "_blank", "width=window.innerWidth,height=window.innerHeight,fullscreen=yes");
 
-        document.getElementById('zoomOut').addEventListener('click', () => {
-            if (cardScale > 1) {
-                if(fontSize>5) fontSize-= 1;
-                else
-                cardScale -= 0.1;
-                countdownElement.style.fontSize = `${fontSize}em`;
-                card.style.transform = `scale(${cardScale})`;  // Scale the entire card
-            }
+            // Create a big timer in the popup window
+            zoomWindow.document.body.innerHTML = `
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%; margin: 0;">
+            <h2 id="bigTimer" style="font-size: calc(10vw + 10vh); text-align: center; margin: 0;">${countdownElement.textContent}</h2>
+        </div>
+    `;
+
+            // Get the bigTimer element from the popup window
+            const bigTimer = zoomWindow.document.getElementById("bigTimer");
+
+            // Sync the timer between the full-screen div and the popup window
+            const syncTimer = setInterval(function () {
+                bigTimer.textContent = countdownElement.textContent;
+            }, 1000); // Update every second to keep them in sync
+
+            // Optional: Close the zoom window when the popup window is closed
+            zoomWindow.onunload = function () {
+                clearInterval(syncTimer); // Stop syncing the timer when the popup is closed
+            };
         });
-        const state =(currentView == 'upcoming');
+        const state = (currentView == 'upcoming');
         const countdownInterval = setInterval(() => {
             const el = document.getElementById(timeLeftId2);
             if (remainingMs <= 0) {
@@ -426,10 +432,10 @@ const ExamController = {
 
 
         // Add event listeners for actions
-        card.querySelector('.cancel-btn')?.addEventListener('click',  () => {
+        card.querySelector('.cancel-btn')?.addEventListener('click', () => {
             this.handleCancelExam(this);
             clearInterval(countdownInterval);
-             this.stopPropagation();
+            this.stopPropagation();
         });
         card.querySelector('.reschedule-btn')?.addEventListener('click', this.showRescheduleForm.bind(this));
         card.querySelector('.duration-btn')?.addEventListener('click', this.showDurationForm.bind(this));
@@ -480,7 +486,7 @@ const ExamController = {
     handleCancelExam: async function () {
 
         //e.stopPropagation();
-        
+
         const exam = await this._getSelectedExamFromExpandedView();
         if (!exam) return;
 
@@ -637,3 +643,163 @@ document.addEventListener('DOMContentLoaded', () => {
 
     ExamController.loadExams(); // Only once
 });
+// Get the button that will trigger the full-screen div
+const openDivBtn = document.getElementById("openDivBtn");
+
+// Function to create and display the full-screen div
+openDivBtn.onclick = function () {
+    // Create a new div to cover the entire screen
+    const fullScreenDiv = document.createElement("div");
+    fullScreenDiv.classList.add("full-screen-div");
+
+    // Create the content inside the full-screen div
+    const content = document.createElement("div");
+    content.classList.add("full-screen-content");
+
+    // Add content inside the div
+    content.innerHTML = `
+        <h2>Timer</h2>
+        <div class="timer" id="timerDisplay">00:00:00</div>
+        <input type="number" id="timeInput" placeholder="Set Time (Minutes)" />
+        <br>
+        <button id="startPauseBtn">Start</button>
+        <button id="zoomBtn">Zoom</button>
+        <br><br>
+        <label for="increaseMinutes">Increase Time (Minutes):</label>
+        <input type="number" id="increaseMinutes" placeholder="Minutes to Increase" />
+        <button id="increaseTimeBtn">Increase Time</button>
+        <br><br>
+        <label for="decreaseMinutes">Decrease Time (Minutes):</label>
+        <input type="number" id="decreaseMinutes" placeholder="Minutes to Decrease" />
+        <button id="decreaseTimeBtn">Decrease Time</button>
+        <br><br>
+        <button id="closeBtn" class="close-btn">&times;</button>
+    `;
+
+    // Append the content inside the full-screen div
+    fullScreenDiv.appendChild(content);
+
+    // Append the full-screen div to the body
+    document.body.appendChild(fullScreenDiv);
+
+    // Get elements
+    const timerDisplay = document.getElementById("timerDisplay");
+    const timeInput = document.getElementById("timeInput");
+    const startPauseBtn = document.getElementById("startPauseBtn");
+    const zoomBtn = document.getElementById("zoomBtn");
+    const increaseMinutesInput = document.getElementById("increaseMinutes");
+    const decreaseMinutesInput = document.getElementById("decreaseMinutes");
+    const increaseTimeBtn = document.getElementById("increaseTimeBtn");
+    const decreaseTimeBtn = document.getElementById("decreaseTimeBtn");
+    const closeBtn = document.getElementById("closeBtn");
+
+    let countdownInterval;
+    let totalSeconds = 0; // Total time in seconds
+    let isRunning = false;
+
+    // Function to update the timer display
+    function updateTimerDisplay() {
+        let hours = Math.floor(totalSeconds / 3600); // Get hours
+        let minutes = Math.floor((totalSeconds % 3600) / 60); // Get minutes
+        let seconds = totalSeconds % 60; // Get remaining seconds
+        timerDisplay.textContent = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+    }
+
+    // Helper function to format time as two digits
+    function formatTime(time) {
+        return time < 10 ? `0${time}` : time;
+    }
+
+    // Start or pause the timer
+    startPauseBtn.onclick = function () {
+        if (isRunning) {
+            // Pause the timer
+            clearInterval(countdownInterval);
+            startPauseBtn.textContent = "Resume";
+        } else {
+            // Start the timer
+            if (totalSeconds === 0) {
+                // Get time input value and convert it to total seconds
+                let minutes = parseInt(timeInput.value) || 0;
+                if (minutes <= 0) {
+                    alert("Please enter a valid time!");
+                    return; // Don't start if the input is invalid
+                }
+                totalSeconds = minutes * 60; // Convert minutes to seconds
+            }
+
+            countdownInterval = setInterval(function () {
+                if (totalSeconds > 0) {
+                    totalSeconds--; // Decrease total seconds
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(countdownInterval);
+                    alert("Time's up!");
+                    startPauseBtn.textContent = "Start"; // Reset the button text
+                }
+            }, 1000); // Update every second
+            startPauseBtn.textContent = "Pause";
+        }
+        isRunning = !isRunning;
+    }
+
+    // Increase time by the specified number of minutes
+    increaseTimeBtn.onclick = function () {
+        let minutesToAdd = parseInt(increaseMinutesInput.value) || 0;
+        if (minutesToAdd > 0) {
+            totalSeconds += minutesToAdd * 60; // Add the specified minutes to the timer
+            updateTimerDisplay(); // Update the display
+        }
+    }
+
+    // Decrease time by the specified number of minutes
+    decreaseTimeBtn.onclick = function () {
+        let minutesToSubtract = parseInt(decreaseMinutesInput.value) || 0;
+        if (minutesToSubtract > 0 && totalSeconds >= minutesToSubtract * 60) {
+            totalSeconds -= minutesToSubtract * 60; // Subtract the specified minutes from the timer
+            updateTimerDisplay(); // Update the display
+        }
+    }
+
+    // Zoom button functionality to open a new window
+    // Zoom button functionality to open a new window
+    zoomBtn.onclick = function () {
+        // Open a new popup window in full-screen mode
+        const zoomWindow = window.open("", "_blank", "width=window.innerWidth,height=window.innerHeight,fullscreen=yes");
+
+        // Create a big timer in the popup window
+        zoomWindow.document.body.innerHTML = `
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%; margin: 0;">
+            <h2 id="bigTimer" style="font-size: calc(10vw + 10vh); text-align: center; margin: 0;">${timerDisplay.textContent}</h2>
+        </div>
+    `;
+
+        // Get the bigTimer element from the popup window
+        const bigTimer = zoomWindow.document.getElementById("bigTimer");
+
+        // Sync the timer between the full-screen div and the popup window
+        const syncTimer = setInterval(function () {
+            bigTimer.textContent = timerDisplay.textContent;
+        }, 1000); // Update every second to keep them in sync
+
+        // Optional: Close the zoom window when the popup window is closed
+        zoomWindow.onunload = function () {
+            clearInterval(syncTimer); // Stop syncing the timer when the popup is closed
+        };
+    }
+
+
+    // Close the overlay when the close button is clicked
+    closeBtn.onclick = function () {
+        clearInterval(countdownInterval); // Stop the timer if it's running
+        fullScreenDiv.remove(); // Remove the div from the DOM
+    }
+
+    // Optionally: Close the div if the user clicks outside the content area
+    fullScreenDiv.onclick = function (event) {
+        if (event.target === fullScreenDiv) {
+            clearInterval(countdownInterval); // Stop the timer if it's running
+            fullScreenDiv.remove(); // Remove the div from the DOM
+        }
+    }
+}
