@@ -730,11 +730,19 @@ openDivBtn.onclick = function () {
             }
 
             countdownInterval = setInterval(function () {
-                if (totalSeconds > 0) {
+                if(totalSeconds<= 300)
+                {
                     totalSeconds--; // Decrease total seconds
                     updateTimerDisplay();
+                     timerDisplay.style.color = "#dc3545";
+                }
+                else if (totalSeconds > 0) {
+                    totalSeconds--; // Decrease total seconds
+                    updateTimerDisplay();
+                     timerDisplay.style.color = "#007bff";
                 } else {
                     clearInterval(countdownInterval);
+                    playNotificationSound();
                     alert("Time's up!");
                     startPauseBtn.textContent = "Start"; // Reset the button text
                 }
@@ -781,6 +789,7 @@ openDivBtn.onclick = function () {
         // Sync the timer between the full-screen div and the popup window
         const syncTimer = setInterval(function () {
             bigTimer.textContent = timerDisplay.textContent;
+            bigTimer.style.color=document.getElementById("timerDisplay").style.color;
         }, 1000); // Update every second to keep them in sync
 
         // Optional: Close the zoom window when the popup window is closed
